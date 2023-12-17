@@ -1,29 +1,44 @@
+<!-- eslint-disable prettier/prettier -->
 <template>
-  <div class="bg-gray-500">
-    <h1>{{ msg }}</h1>
-    <input type="file" @change="onChange" />
-
-    <!-- 
-    <div>
-      <div v-for="item in conceptoConGastos" :key="item.concepto">
-        <b>{{ item.concepto }} = {{ item.totalGastos }}</b>
-      </div>
+  <div>
+    <h1 class="text-4xl">{{ msg }}</h1>
+    <div class="mt-10">
+      <input type="file" @change="onChange" />
     </div>
-     -->
-    <div v-if="conceptoConGastos.length > 0">
-      <table>
-        <thead>
+
+    <div v-if="conceptoConGastos.length > 0" class="flex justify-center items-center my-20">
+      <table class="min-w-75 bg-white border border-gray-200">
+        <thead class="bg-blue-500">
           <tr>
-            <th>Concepto</th>
-            <th>Importe</th>
+            <th class="py-2 px-4 border-b">#</th>
+            <th class="py-2 px-4 border-b">Concepto</th>
+            <th class="py-2 px-4 border-b">Importe</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in conceptoConGastos" :key="item.concepto">
-            <td>{{ item.concepto }}</td>
-            <td>{{ item.totalGastos }}</td>
+          <tr v-for="(item, index) in conceptoConGastos" :key="item.concepto" :class="{ 'bg-gray-100': index % 2 === 0 }">
+            <td class="py-2 px-4 border-b text-left" v-if="index > 0">
+              <b>{{ index }}</b>
+            </td>
+            <td class="py-2 px-4 border-b text-left" v-if="index > 0">
+              {{ item.concepto }}
+            </td>
+            <td class="py-2 px-4 border-b text-right" v-if="index > 0"
+              :class="{ 'text-green-500': item.totalGastos > 0, 'text-red-500': item.totalGastos < 0 }">
+              {{ item.totalGastos }} <b>€</b>
+            </td>
           </tr>
         </tbody>
+        <!-- Footer con el total -->
+        <tfoot>
+          <tr>
+            <td colspan="2" class="py-2 px-4 border-t text-right font-bold">Total:</td>
+            <td class="py-2 px-4 border-t text-right"
+              :class="{ 'text-green-500': totalImportes > 0, 'text-red-500': totalImportes < 0 }">
+              {{ totalImportes.toFixed(2) }} <b>€</b>
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
@@ -70,6 +85,14 @@ export default {
       console.log("conceptos", conceptos);
       return Object.values(conceptos);
     },
+    totalImportes() {
+      console.log("conceptoConGastos", this.conceptoConGastos);
+      // Calcular el total de todos los importes
+      return this.conceptoConGastos.reduce(
+        (total, item) => total + (item.totalGastos || 0),
+        0
+      );
+    },
   },
 
   methods: {
@@ -92,22 +115,4 @@ export default {
 };
 </script>
 
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
-}
-</style>
+<style scoped></style>
